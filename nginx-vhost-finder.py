@@ -40,8 +40,9 @@ class NginxServer(object):
 
     def is_http(self, port):
         for l in self.listen_to:
-            if str(port) in l or ":%d"%port in l:
-                return True
+            for part in l:
+                if str(port) == part or part.endswith(":%d"%port):
+                    return True
         # if no listen directive, by default it desserves HTTP:
         if len(self.listen_to) == 0:
             return True
@@ -49,9 +50,10 @@ class NginxServer(object):
 
     def is_https(self, port):
         for l in self.listen_to:
-            if str(port) in l or ":%d"%port in l:
-                if 'ssl' in l:
-                    return True
+            if 'ssl' in l:
+                for part in l:
+                    if str(port) == part or part.endswith(":%d"%port):
+                        return True
         return False
 
     def can_serve(self, ip, https, port):
